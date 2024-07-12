@@ -1,0 +1,8 @@
+services:
+  - name: roblox-verification-bot
+    env: node
+    buildCommand: npm install --production
+    startCommand: npm start
+
+staticDirs:
+  - public

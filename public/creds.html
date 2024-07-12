@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stored Credentials</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stored Credentials</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Page Name</th>
+                <th>Username</th>
+                <th>API Key</th>
+            </tr>
+        </thead>
+        <tbody id="credentialsTableBody">
+            <!-- Data will be inserted here dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchStoredCredentials() {
+            try {
+                const response = await axios.get('/api/userCredentials');
+
+                // Clear previous data
+                const credentialsTableBody = document.getElementById('credentialsTableBody');
+                credentialsTableBody.innerHTML = '';
+
+                // Populate table with fetched credentials
+                response.data.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${entry.pageName}</td>
+                        <td>${entry.username}</td>
+                        <td>${entry.api_key}</td>
+                    `;
+                    credentialsTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching stored credentials:', error);
+                alert('Failed to fetch stored credentials. Please try again.');
+            }
+        }
+
+        // Fetch stored credentials on page load
+        document.addEventListener('DOMContentLoaded', fetchStoredCredentials);
+    </script>
+</body>
+</html>

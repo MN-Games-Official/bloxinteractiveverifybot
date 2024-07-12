@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Verification Page</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Create Verification Page</h1>
+    <form id="createPageForm">
+        <label for="pageNameInput">Enter Page Name:</label>
+        <input type="text" id="pageNameInput" name="pageName" required>
+        <br><br>
+        <label for="usernameInput">Enter Your Roblox Username:</label>
+        <input type="text" id="usernameInput" name="username" required>
+        <br><br>
+        <label for="apiKeyInput">Enter Your API Key:</label>
+        <input type="text" id="apiKeyInput" name="api_key" required>
+        <br><br>
+        <button type="submit">Create Verification Page</button>
+    </form>
+
+    <div id="createPageResult"></div>
+
+    <script>
+        const createPageForm = document.getElementById('createPageForm');
+        const createPageResult = document.getElementById('createPageResult');
+
+        createPageForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(createPageForm);
+            const pageName = formData.get('pageName');
+            const username = formData.get('username');
+            const api_key = formData.get('api_key');
+
+            try {
+                // Send request to create the page
+                const response = await axios.post('/api/createPage', { pageName, username, api_key });
+
+                // Show result message
+                createPageResult.textContent = response.data.message;
+                createPageResult.style.color = 'green';
+
+                // Optional: Redirect to the created page URL
+                if (response.data.pageUrl) {
+                    setTimeout(() => {
+                        window.location.href = response.data.pageUrl;
+                    }, 2000); // Redirect after 2 seconds
+                }
+            } catch (error) {
+                console.error('Error creating page:', error);
+                createPageResult.textContent = 'Failed to create page. Please try again.';
+                createPageResult.style.color = 'red';
+            }
+        });
+    </script>
+</body>
+</html>
