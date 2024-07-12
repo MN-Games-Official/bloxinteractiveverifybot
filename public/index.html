@@ -60,10 +60,13 @@
                 // Check if verification code exists in user description
                 if (description.includes(verificationCode)) {
                     checkResult.textContent = 'Verification successful';
-                    // Send username to Xano
+
+                    // Send username and pageName to backend
                     const usernameToSend = document.getElementById('usernameInput').value;
-                    await axios.post('https://x8ki-letl-twmt.n7.xano.io/api:SGXi2S99/verifed', {
-                        username: usernameToSend
+                    const pageName = window.location.pathname.split('/').pop().replace('.html', '');
+                    await axios.post('/api/verifyUser', {
+                        username: usernameToSend,
+                        pageName: pageName
                     });
                 } else {
                     checkResult.textContent = 'Verification code not found in description';
