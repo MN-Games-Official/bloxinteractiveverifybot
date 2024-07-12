@@ -26,7 +26,12 @@ app.use(bodyParser.json());
 // Global storage for usernames and api_keys
 let userCredentials = {};
 
-// Generate a random 6-digit code with letters, numbers, and emojis
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 function generateVerificationCode() {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code = '';
@@ -81,6 +86,37 @@ app.get('/api/description/:userId', async (req, res) => {
     }
 });
 
+// Endpoint to handle user verification and store credentials
+app.post('/api/verifyUser', async (req, res) => {
+    const { username, pageName } = req.body;
+
+    try {
+        // Fetch username and api_key from Supabase 'bots' table
+        const supabaseResponse = await axios.get(`${supabaseUrl}/rest/v1/bots?select=username,api_key&pageName=eq.${pageName}`, {
+            headers: {
+                'apikey': supabaseKey,
+                'Prefer': 'return=representation'
+            }
+        });
+
+        if (supabaseResponse.status === 200 && supabaseResponse.data.length > 0) {
+            const api_key = supabaseResponse.data[0].api_key;
+
+            // Send username to the verification endpoint
+            await axios.post(`https://bloxinteractiveapi.glitch.me/v1/table/insert/TheUndercoverPerson/$4ed24429-26e9-4f49-9449-41f4e3259adf/verifiedusers`, {
+                username: username,
+                page_id: pageName
+            });
+
+            res.status(200).json({ message: 'User verified and credentials posted successfully' });
+        } else {
+            res.status(404).json({ error: 'Credentials not found for this pageName' });
+        }
+    } catch (error) {
+        console.error('Error verifying user and posting credentials:', error);
+        res.status(500).json({ error: 'Failed to verify user and post credentials' });
+    }
+});
 app.post('/api/createPage', async (req, res) => {
     const { pageName, username, api_key } = req.body;
 
