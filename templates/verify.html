@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Roblox Account</title>
+</head>
+<body>
+    <h1>Verify Roblox Account</h1>
+    <p>Username: {{ username }}</p>
+    <p>Your verification token is: <strong>{{ token }}</strong></p>
+    <p>Please add this token to your Roblox profile description and then click the button below to verify.</p>
+    <form action="/check_verification" method="post" id="verificationForm">
+        <button type="submit" id="verifyButton">Verify</button>
+    </form>
+
+    <script>
+        // Store verification token in localStorage
+        localStorage.setItem('verifcode', '{{ token }}');
+    </script>
+    
+    <script>
+        // Delay redirect for 1 second for debugging purposes
+        document.getElementById('verifyButton').addEventListener('click', function(event) {
+            event.preventDefault();
+            setTimeout(function() {
+                document.getElementById('verificationForm').submit();
+            }, 1000);  // 1 second delay
+        });
+    </script>
+</body>
+</html>

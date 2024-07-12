@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox User Verification</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Roblox User Verification</h1>
+    <form id="usernameForm">
+        <label for="usernameInput">Enter Roblox Username:</label>
+        <input type="text" id="usernameInput" name="username">
+        <button type="submit">Verify</button>
+    </form>
+    <div id="verificationCode">
+        <p id="code"></p>
+        <button id="checkCodeBtn">Check Code</button>
+        <p id="checkResult"></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('usernameForm');
+        const codeDisplay = document.getElementById('code');
+        const checkCodeBtn = document.getElementById('checkCodeBtn');
+        const checkResult = document.getElementById('checkResult');
+        let userId; // Variable to store userId globally
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const username = formData.get('username');
+
+            try {
+                // Fetch user ID and verification code
+                const userIdResponse = await axios.get(`/api/userid/${username}`);
+                userId = userIdResponse.data.userId; // Store userId globally
+                const verificationCode = userIdResponse.data.verificationCode;
+
+                // Save verification code to localStorage
+                localStorage.setItem('verificationCode', verificationCode);
+                codeDisplay.textContent = `Verification Code: ${verificationCode}`;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+
+        checkCodeBtn.addEventListener('click', async function() {
+            const verificationCode = localStorage.getItem('verificationCode');
+            try {
+                // Check if userId is defined
+                if (!userId) {
+                    throw new Error('User ID not found');
+                }
+
+                // Fetch user description
+                const descriptionResponse = await axios.get(`/api/description/${userId}`);
+                const description = descriptionResponse.data.description;
+
+                // Check if verification code exists in user description
+                if (description.includes(verificationCode)) {
+                    checkResult.textContent = 'Verification successful';
+                    // Send username to Xano
+                    const usernameToSend = document.getElementById('usernameInput').value;
+                    await axios.post('https://x8ki-letl-twmt.n7.xano.io/api:SGXi2S99/verifed', {
+                        username: usernameToSend
+                    });
+                } else {
+                    checkResult.textContent = 'Verification code not found in description';
+                }
+            } catch (error) {
+                console.error('Error checking verification code:', error);
+                checkResult.textContent = 'Verification failed';
+            }
+        });
+    </script>
+</body>
+</html>

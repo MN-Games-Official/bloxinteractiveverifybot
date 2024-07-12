@@ -1,0 +1,22 @@
+{
+  "name": "roblox-verification-bot",
+  "version": "1.0.0",
+  "description": "A Node.js application for verifying Roblox users using their profile description.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "express": "^4.17.2",
+    "express-session": "^1.17.2",
+    "body-parser": "^1.19.1",
+    "fs": "^0.0.2",
+    "@supabase/supabase-js": "^2.44.3",
+    "crypto-js": "^4.2.0",
+    "path": "^0.12.7"
+  }
+}
